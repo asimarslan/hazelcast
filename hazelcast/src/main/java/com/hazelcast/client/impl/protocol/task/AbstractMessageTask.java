@@ -109,7 +109,7 @@ public abstract class AbstractMessageTask<P>
     }
 
     private void initializeAndProcessMessage() throws Throwable {
-        if (!node.getNodeExtension().isStartCompleted()) {
+        if (!node.joined()) {
             throw new HazelcastInstanceNotActiveException("Hazelcast instance is not ready yet!");
         }
         parameters = decodeClientMessage(clientMessage);
