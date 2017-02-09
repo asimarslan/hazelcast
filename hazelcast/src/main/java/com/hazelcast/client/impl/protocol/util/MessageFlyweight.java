@@ -29,6 +29,8 @@ import java.util.Map;
  * Parameter Flyweight
  */
 public class MessageFlyweight {
+    public static DataProcessor processor = null;
+
     /**
      * Long mask
      */
@@ -103,6 +105,9 @@ public class MessageFlyweight {
     }
 
     public MessageFlyweight set(Data data) {
+        if(processor != null) {
+            processor.process(data);
+        }
         final byte[] bytes = data.toByteArray();
         set(bytes);
         return this;
@@ -227,4 +232,7 @@ public class MessageFlyweight {
         buffer.putInt(index + offset, (int) value);
     }
 
+    public interface DataProcessor {
+        void process(Data data);
+    }
 }
