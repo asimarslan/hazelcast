@@ -67,6 +67,9 @@ public class TestHazelcastFactory extends TestHazelcastInstanceFactory {
             public void process(Data data) {
                 try {
                     Object object = serializationService.toObject(data);
+                    if ("com.hazelcast.instance.MemberImpl".equals(object.getClass().getName())){
+                        new Throwable().printStackTrace();
+                    }
                     allClasses.add(object.getClass().getName());
                 } catch (Exception e) {
                     //ignore
