@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.hazelcast.client.impl;
+package com.hazelcast.client.connection;
 
-import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.connection.AddressProvider;
-import com.hazelcast.client.connection.ClientConnectionManager;
-import com.hazelcast.spi.discovery.integration.DiscoveryService;
+/**
+ * Client connection strategy is used to manage connections.
+ */
+public interface ClientConnectionStrategy {
 
-import java.util.Collection;
-
-public interface ClientConnectionManagerFactory {
-
-    ClientConnectionManager createConnectionManager(ClientConfig config, HazelcastClientInstanceImpl client,
-            DiscoveryService discoveryService, Collection<AddressProvider> addressProviders);
+    void onStart(Object context);
+    void onShutdown(Object context);
+    void onConnectToCluster(Object context);
+    void onDisconnectFromCluster(Object context);
+    void onConnect(Object context);
+    void onDisconnect(Object context);
+    void onHeartBeatFail(Object context);
+    void onHeartBeatRestore(Object context);
 }

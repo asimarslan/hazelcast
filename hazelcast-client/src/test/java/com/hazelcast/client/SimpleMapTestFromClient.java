@@ -54,100 +54,106 @@ public class SimpleMapTestFromClient {
 
     public static void main(String[] args) {
         final ClientConfig clientConfig = new ClientConfig();
-        final HazelcastInstance instance1 = Hazelcast.newHazelcastInstance();
-        final HazelcastInstance instance2 = Hazelcast.newHazelcastInstance();
+        clientConfig.getNetworkConfig().setConnectionAttemptLimit(Integer.MAX_VALUE);
+        clientConfig.getNetworkConfig().setConnectionAttemptPeriod(0);
+
+//        final HazelcastInstance instance1 = Hazelcast.newHazelcastInstance();
+//        final HazelcastInstance instance2 = Hazelcast.newHazelcastInstance();
         final HazelcastInstance client = HazelcastClient.newHazelcastClient(clientConfig);
-        final Stats stats = new Stats();
-        if (args != null && args.length > 0) {
-            for (String arg : args) {
-                arg = arg.trim();
-                if (arg.startsWith("t")) {
-                    THREAD_COUNT = Integer.parseInt(arg.substring(1));
-                } else if (arg.startsWith("c")) {
-                    ENTRY_COUNT = Integer.parseInt(arg.substring(1));
-                } else if (arg.startsWith("v")) {
-                    VALUE_SIZE = Integer.parseInt(arg.substring(1));
-                } else if (arg.startsWith("g")) {
-                    GET_PERCENTAGE = Integer.parseInt(arg.substring(1));
-                } else if (arg.startsWith("p")) {
-                    PUT_PERCENTAGE = Integer.parseInt(arg.substring(1));
-                }
-            }
-        } else {
-            System.out.println("Help: sh test.sh t200 v130 p10 g85 ");
-            System.out.println("    // means 200 threads, value-size 130 bytes, 10% put, 85% get");
-            System.out.println("");
-        }
-        System.out.println("Starting Test with ");
-        System.out.println("      Thread Count: " + THREAD_COUNT);
-        System.out.println("       Entry Count: " + ENTRY_COUNT);
-        System.out.println("        Value Size: " + VALUE_SIZE);
-        System.out.println("    Get Percentage: " + GET_PERCENTAGE);
-        System.out.println("    Put Percentage: " + PUT_PERCENTAGE);
-        System.out.println(" Remove Percentage: " + (100 - (PUT_PERCENTAGE + GET_PERCENTAGE)));
-        ExecutorService es = Executors.newFixedThreadPool(THREAD_COUNT);
-        for (int i = 0; i < THREAD_COUNT; i++) {
-            es.submit(new Runnable() {
-                public void run() {
-                    IMap<String, Object> map = client.getMap("default");
-                    while (true) {
-                        int key = (int) (Math.random() * ENTRY_COUNT);
-                        int operation = ((int) (Math.random() * 100));
-                        if (operation < GET_PERCENTAGE) {
-                            map.get(String.valueOf(key));
-                            stats.gets.incrementAndGet();
-                        } else if (operation < GET_PERCENTAGE + PUT_PERCENTAGE) {
-                            map.put(String.valueOf(key), new byte[VALUE_SIZE]);
-                            stats.puts.incrementAndGet();
-                        } else {
-                            map.remove(String.valueOf(key));
-                            stats.removes.incrementAndGet();
-                        }
-                    }
-                }
-            });
-        }
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(STATS_SECONDS * 1000);
-                        System.out.println("cluster size:"
-                                + client.getCluster().getMembers().size());
-                        Stats currentStats = stats.getAndReset();
-                        System.out.println(currentStats);
-                        System.out.println("Operations per Second: " + currentStats.total()
-                                / STATS_SECONDS);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        String uuid = client.getLocalEndpoint().getUuid();
+        System.out.println(uuid);
+        //        client.
+//        final Stats stats = new Stats();
+//        if (args != null && args.length > 0) {
+//            for (String arg : args) {
+//                arg = arg.trim();
+//                if (arg.startsWith("t")) {
+//                    THREAD_COUNT = Integer.parseInt(arg.substring(1));
+//                } else if (arg.startsWith("c")) {
+//                    ENTRY_COUNT = Integer.parseInt(arg.substring(1));
+//                } else if (arg.startsWith("v")) {
+//                    VALUE_SIZE = Integer.parseInt(arg.substring(1));
+//                } else if (arg.startsWith("g")) {
+//                    GET_PERCENTAGE = Integer.parseInt(arg.substring(1));
+//                } else if (arg.startsWith("p")) {
+//                    PUT_PERCENTAGE = Integer.parseInt(arg.substring(1));
+//                }
+//            }
+//        } else {
+//            System.out.println("Help: sh test.sh t200 v130 p10 g85 ");
+//            System.out.println("    // means 200 threads, value-size 130 bytes, 10% put, 85% get");
+//            System.out.println("");
+//        }
+//        System.out.println("Starting Test with ");
+//        System.out.println("      Thread Count: " + THREAD_COUNT);
+//        System.out.println("       Entry Count: " + ENTRY_COUNT);
+//        System.out.println("        Value Size: " + VALUE_SIZE);
+//        System.out.println("    Get Percentage: " + GET_PERCENTAGE);
+//        System.out.println("    Put Percentage: " + PUT_PERCENTAGE);
+//        System.out.println(" Remove Percentage: " + (100 - (PUT_PERCENTAGE + GET_PERCENTAGE)));
+//        ExecutorService es = Executors.newFixedThreadPool(THREAD_COUNT);
+//        for (int i = 0; i < THREAD_COUNT; i++) {
+//            es.submit(new Runnable() {
+//                public void run() {
+//                    IMap<String, Object> map = client.getMap("default");
+//                    while (true) {
+//                        int key = (int) (Math.random() * ENTRY_COUNT);
+//                        int operation = ((int) (Math.random() * 100));
+//                        if (operation < GET_PERCENTAGE) {
+//                            map.get(String.valueOf(key));
+//                            stats.gets.incrementAndGet();
+//                        } else if (operation < GET_PERCENTAGE + PUT_PERCENTAGE) {
+//                            map.put(String.valueOf(key), new byte[VALUE_SIZE]);
+//                            stats.puts.incrementAndGet();
+//                        } else {
+//                            map.remove(String.valueOf(key));
+//                            stats.removes.incrementAndGet();
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//        Executors.newSingleThreadExecutor().submit(new Runnable() {
+//            public void run() {
+//                while (true) {
+//                    try {
+//                        Thread.sleep(STATS_SECONDS * 1000);
+//                        System.out.println("cluster size:"
+//                                + client.getCluster().getMembers().size());
+//                        Stats currentStats = stats.getAndReset();
+//                        System.out.println(currentStats);
+//                        System.out.println("Operations per Second: " + currentStats.total()
+//                                / STATS_SECONDS);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
     }
 
-    public static class Stats {
-        public AtomicLong puts = new AtomicLong();
-        public AtomicLong gets = new AtomicLong();
-        public AtomicLong removes = new AtomicLong();
-
-        public Stats getAndReset() {
-            long putsNow = puts.getAndSet(0);
-            long getsNow = gets.getAndSet(0);
-            long removesNow = removes.getAndSet(0);
-            Stats newOne = new Stats();
-            newOne.puts.set(putsNow);
-            newOne.gets.set(getsNow);
-            newOne.removes.set(removesNow);
-            return newOne;
-        }
-
-        public long total() {
-            return puts.get() + gets.get() + removes.get();
-        }
-
-        public String toString() {
-            return "total= " + total() + ", gets:" + gets.get() + ", puts: " + puts.get() + ", removes:" + removes.get();
-        }
-    }
+//    public static class Stats {
+//        public AtomicLong puts = new AtomicLong();
+//        public AtomicLong gets = new AtomicLong();
+//        public AtomicLong removes = new AtomicLong();
+//
+//        public Stats getAndReset() {
+//            long putsNow = puts.getAndSet(0);
+//            long getsNow = gets.getAndSet(0);
+//            long removesNow = removes.getAndSet(0);
+//            Stats newOne = new Stats();
+//            newOne.puts.set(putsNow);
+//            newOne.gets.set(getsNow);
+//            newOne.removes.set(removesNow);
+//            return newOne;
+//        }
+//
+//        public long total() {
+//            return puts.get() + gets.get() + removes.get();
+//        }
+//
+//        public String toString() {
+//            return "total= " + total() + ", gets:" + gets.get() + ", puts: " + puts.get() + ", removes:" + removes.get();
+//        }
+//    }
 }

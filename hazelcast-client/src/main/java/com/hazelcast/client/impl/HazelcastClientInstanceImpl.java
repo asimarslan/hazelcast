@@ -225,9 +225,9 @@ public class HazelcastClientInstanceImpl implements HazelcastInstance, Serializa
         transactionManager = new ClientTransactionManagerServiceImpl(this, loadBalancer);
         partitionService = new ClientPartitionServiceImpl(this);
         discoveryService = initDiscoveryService(config);
-        connectionManager = clientConnectionManagerFactory.createConnectionManager(config, this, discoveryService);
         Collection<AddressProvider> addressProviders = createAddressProviders(externalAddressProvider);
-        clusterService = new ClientClusterServiceImpl(this, addressProviders);
+        connectionManager = clientConnectionManagerFactory.createConnectionManager(config, this, discoveryService, addressProviders);
+        clusterService = new ClientClusterServiceImpl(this);
 
         int maxAllowedConcurrentInvocations = properties.getInteger(MAX_CONCURRENT_INVOCATIONS);
         callIdSequence = new CallIdSequence.CallIdSequenceFailFast(maxAllowedConcurrentInvocations);

@@ -721,12 +721,9 @@ public class NearCachedClientMapProxy<K, V> extends ClientMapProxy<K, V> {
     }
 
     private int getConnectedServerVersion() {
-        ClientClusterService clusterService = getContext().getClusterService();
-        Address ownerConnectionAddress = clusterService.getOwnerConnectionAddress();
-
         HazelcastClientInstanceImpl client = getClient();
         ClientConnectionManager connectionManager = client.getConnectionManager();
-        Connection connection = connectionManager.getConnection(ownerConnectionAddress);
+        Connection connection = connectionManager.getOwnerConnection();
         if (connection == null) {
             logger.warning(format("No owner connection is available, near cached cache %s will be started in legacy mode", name));
             return UNKNOWN_HAZELCAST_VERSION;

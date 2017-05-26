@@ -113,5 +113,5 @@ public interface ClientClusterService {
      *
      * @return The address of the owner connection.
      */
-    Address getOwnerConnectionAddress();
+//    Address getOwnerConnectionAddress();
 }

@@ -22,9 +22,9 @@ import com.hazelcast.client.impl.HazelcastClientInstanceImpl;
 import com.hazelcast.client.impl.protocol.ClientMessage;
 import com.hazelcast.client.impl.protocol.codec.ClientAddPartitionLostListenerCodec;
 import com.hazelcast.client.impl.protocol.codec.ClientRemovePartitionLostListenerCodec;
+import com.hazelcast.client.spi.ClientClusterService;
 import com.hazelcast.client.spi.ClientListenerService;
 import com.hazelcast.client.spi.EventHandler;
-import com.hazelcast.client.spi.impl.ClusterListenerSupport;
 import com.hazelcast.client.spi.impl.ConnectionHeartbeatListener;
 import com.hazelcast.client.spi.impl.ListenerMessageCodec;
 import com.hazelcast.client.spi.properties.ClientProperty;
@@ -235,8 +235,7 @@ public class ClientHeartbeatTest extends ClientTestSupport {
         config.setProperty(ClientProperty.SHUFFLE_MEMBER_LIST.getName(), "false");
         final HazelcastInstance client = hazelcastFactory.newHazelcastClient(config);
         HazelcastClientInstanceImpl hazelcastClientInstanceImpl = getHazelcastClientInstanceImpl(client);
-        final ClusterListenerSupport clientClusterService =
-                (ClusterListenerSupport) hazelcastClientInstanceImpl.getClientClusterService();
+        final ClientConnectionManager clientConnectionManager = hazelcastClientInstanceImpl.getConnectionManager();
 
         final CountDownLatch countDownLatch = new CountDownLatch(2);
         client.getLifecycleService().addLifecycleListener(new LifecycleListener() {
@@ -263,8 +262,8 @@ public class ClientHeartbeatTest extends ClientTestSupport {
                 String uuid = instance3.getLocalEndpoint().getUuid();
                 assertEquals(uuid, getClientEngineImpl(instance3).getOwnerUuid(client.getLocalEndpoint().getUuid()));
                 assertEquals(uuid, getClientEngineImpl(instance2).getOwnerUuid(client.getLocalEndpoint().getUuid()));
-                assertEquals(uuid, clientClusterService.getPrincipal().getOwnerUuid());
-                assertEquals(instance3.getCluster().getLocalMember().getAddress(), clientClusterService.getOwnerConnectionAddress());
+                assertEquals(uuid, clientConnectionManager.getPrincipal().getOwnerUuid());
+                assertEquals(instance3.getCluster().getLocalMember().getAddress(), clientConnectionManager.getOwnerConnectionAddress());
             }
         });
 
@@ -278,8 +277,8 @@ public class ClientHeartbeatTest extends ClientTestSupport {
                 String uuid = instance3.getLocalEndpoint().getUuid();
                 assertEquals(uuid, getClientEngineImpl(instance3).getOwnerUuid(client.getLocalEndpoint().getUuid()));
                 assertEquals(uuid, getClientEngineImpl(instance2).getOwnerUuid(client.getLocalEndpoint().getUuid()));
-                assertEquals(uuid, clientClusterService.getPrincipal().getOwnerUuid());
-                assertEquals(instance3.getCluster().getLocalMember().getAddress(), clientClusterService.getOwnerConnectionAddress());
+                assertEquals(uuid, clientConnectionManager.getPrincipal().getOwnerUuid());
+                assertEquals(instance3.getCluster().getLocalMember().getAddress(), clientConnectionManager.getOwnerConnectionAddress());
             }
         });
     }
