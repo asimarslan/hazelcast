@@ -38,7 +38,7 @@ public class SimpleMapTestFromClient {
         GroupProperty.SOCKET_BIND_ANY.setSystemProperty("false");
     }
 
-    private static int threadCount = 40;
+    private static int threadCount = 100;
     private static int entryCount = 10 * 1000;
     private static int valueSize = 1000;
     private static int statsSeconds = 10;
@@ -47,8 +47,10 @@ public class SimpleMapTestFromClient {
 
     public static void main(String[] args) {
         final ClientConfig clientConfig = new ClientConfig();
-        Hazelcast.newHazelcastInstance();
-        Hazelcast.newHazelcastInstance();
+        clientConfig.getNetworkConfig().addAddress("127.0.0.1:5701");
+//        clientConfig.getNetworkConfig().addAddress("10.216.1.24:5701");
+        //Hazelcast.newHazelcastInstance();
+        //Hazelcast.newHazelcastInstance();
         final HazelcastInstance client = HazelcastClient.newHazelcastClient(clientConfig);
         final Stats stats = new Stats();
         if (args != null && args.length > 0) {
