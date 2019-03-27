@@ -32,16 +32,16 @@ import java.util.concurrent.atomic.AtomicLong;
 @Ignore("Not a JUnit test")
 public class SimpleAtomicLongTestFromClient {
 
-    private static int threadCount = 100;
+    private static int threadCount = 25;
     private static int statsSeconds = 10;
 
-    private static AtomicLong counter = new AtomicLong();
+//    private static AtomicLong counter = new AtomicLong();
     private static AtomicLong ops = new AtomicLong();
 
     public static void main(String[] args) {
         final ClientConfig clientConfig = new ClientConfig();
         clientConfig.getNetworkConfig().addAddress("127.0.0.1:5701");
-        //        clientConfig.getNetworkConfig().addAddress("10.216.1.24:5701");
+//                clientConfig.getNetworkConfig().addAddress("10.216.1.24:5701");
         //Hazelcast.newHazelcastInstance();
         //Hazelcast.newHazelcastInstance();
         final HazelcastInstance client = HazelcastClient.newHazelcastClient(clientConfig);
@@ -53,12 +53,12 @@ public class SimpleAtomicLongTestFromClient {
             Thread t = new Thread(() -> {
                 while (true) {
                     long newValue = atomicLong.incrementAndGet();
-                    counter.set(newValue);
+//                    counter.set(newValue);
                     ops.incrementAndGet();
 
                 }
             });
-            t.setDaemon(true);
+//            t.setDaemon(true);
             threads.add(t);
             t.start();
         }
@@ -71,12 +71,12 @@ public class SimpleAtomicLongTestFromClient {
         while (true) {
             try {
                 Thread.sleep(statsSeconds * 1000);
-                long counterTmp = counter.get();
+//                long counterTmp = counter.get();
                 long opsTmp = ops.get();
 
                 ops.set(0);
-                System.out.println("Atomic long : " + counterTmp);
-                System.out.println("ops/sec : " + opsTmp);
+//                System.out.println("Atomic long : " + counterTmp);
+                System.out.println("ops/sec : " + opsTmp / (statsSeconds*1000));
             } catch (Exception e) {
                 e.printStackTrace();
             }
